@@ -1,0 +1,52 @@
+package com.autobots.automanager.modelos;
+
+import java.util.List;
+
+import org.springframework.hateoas.Link;
+import org.springframework.hateoas.server.mvc.WebMvcLinkBuilder;
+import org.springframework.stereotype.Component;
+
+import com.autobots.automanager.controles.TelefoneControle;
+import com.autobots.automanager.entidades.Telefone;
+
+@Component
+public class AdicionadorLinkTelefone implements AdicionadorLink<Telefone> {
+
+	@Override
+	public void adicionarLink(List<Telefone> lista) {
+		for (Telefone telefone : lista) {
+			adicionarLink(telefone);
+		}
+	}
+
+	@Override
+	public void adicionarLink(Telefone objeto) {
+		Link linkProprio = WebMvcLinkBuilder
+				.linkTo(WebMvcLinkBuilder
+						.methodOn(TelefoneControle.class)
+						.obterTelefone(objeto.getId()))
+				.withSelfRel();
+		objeto.add(linkProprio);
+
+		Link linkColecao = WebMvcLinkBuilder
+				.linkTo(WebMvcLinkBuilder
+						.methodOn(TelefoneControle.class)
+						.obterTelefones())
+				.withRel("telefones");
+		objeto.add(linkColecao);
+
+		Link linkAlterar = WebMvcLinkBuilder
+				.linkTo(WebMvcLinkBuilder
+						.methodOn(TelefoneControle.class)
+						.atualizarTelefone(objeto))
+				.withRel("alterar");
+		objeto.add(linkAlterar);
+
+		Link linkExcluir = WebMvcLinkBuilder
+				.linkTo(WebMvcLinkBuilder
+						.methodOn(TelefoneControle.class)
+						.excluirTelefone(objeto.getId()))
+				.withRel("excluir");
+		objeto.add(linkExcluir);
+	}
+}

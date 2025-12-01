@@ -1,0 +1,52 @@
+package com.autobots.automanager.modelos;
+
+import java.util.List;
+
+import org.springframework.hateoas.Link;
+import org.springframework.hateoas.server.mvc.WebMvcLinkBuilder;
+import org.springframework.stereotype.Component;
+
+import com.autobots.automanager.controles.ClienteControle;
+import com.autobots.automanager.entidades.Cliente;
+
+@Component
+public class AdicionadorLinkCliente implements AdicionadorLink<Cliente> {
+
+	@Override
+	public void adicionarLink(List<Cliente> lista) {
+		for (Cliente cliente : lista) {
+			adicionarLink(cliente);
+		}
+	}
+
+	@Override
+	public void adicionarLink(Cliente objeto) {
+		Link linkProprio = WebMvcLinkBuilder
+				.linkTo(WebMvcLinkBuilder
+						.methodOn(ClienteControle.class)
+						.obterCliente(objeto.getId()))
+				.withSelfRel();
+		objeto.add(linkProprio);
+
+		Link linkColecao = WebMvcLinkBuilder
+				.linkTo(WebMvcLinkBuilder
+						.methodOn(ClienteControle.class)
+						.obterClientes())
+				.withRel("clientes");
+		objeto.add(linkColecao);
+
+		Link linkAlterar = WebMvcLinkBuilder
+				.linkTo(WebMvcLinkBuilder
+						.methodOn(ClienteControle.class)
+						.atualizarCliente(objeto))
+				.withRel("alterar");
+		objeto.add(linkAlterar);
+
+		Link linkExcluir = WebMvcLinkBuilder
+				.linkTo(WebMvcLinkBuilder
+						.methodOn(ClienteControle.class)
+						.excluirCliente(objeto.getId()))
+				.withRel("excluir");
+		objeto.add(linkExcluir);
+	}
+}
